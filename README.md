@@ -1,4 +1,4 @@
-通过 php 学习 网页 robot 程序和 spider 程序的编写。</p>
+通过 php 学习 网页 robot 程序和 spider 程序的编写。<p>
 开发环境：apache 2.2 php 5.3.6<p>
 
 util: 工具类<p>
