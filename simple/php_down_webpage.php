@@ -13,7 +13,7 @@ file ： 将网页文件一次下载到数组中，无需手动关闭；
 	//fopen =========》》
 	/*
 	$file_handle = fopen($target,"r");
-	while(!N($file_handle)){
+	while(!feof($file_handle)){
 		echo fgets($file_handle,4096);
 	}
 	fclose($file_handle);

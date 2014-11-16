@@ -149,10 +149,10 @@ function download_images_for_page($target)
     
     # Update the target in case there was a redirection
     $target = $web_page['STATUS']['url'];
-    
+     echo "redirector target = $target\n";
     # Strip file name off target for use as page base
     $page_base=get_base_page_address($target);
-    
+    echo "page_base = $page_base\n";
     # Identify the directory where iamges are to be saved
     $save_image_directory = "saved_images_".str_replace("http://", "", $page_base);
     
@@ -170,14 +170,16 @@ function download_images_for_page($target)
         {
         $image_path = get_attribute($img_tag_array[$xx],  $attribute="src");
         echo " image: ".$image_path;
+		// echo "\n";
         $image_url = resolve_address($image_path, $page_base);
+		// echo "image_url ".$image_url."\n";
         if(get_base_domain_address($page_base) == get_base_domain_address($image_url))
             {
             # Make image storage directory for image, if one doesn't exist
             $directory = substr($image_path, 0, strrpos($image_path, "/"));
             $directory = str_replace(":", "-", $directory );
             $image_path = str_replace(":", "-", $image_path );
-            
+            // echo "directory_path: ".$save_image_directory."/".$directory."\n";
             clearstatcache(); // clear cache to get accurate directory status
             if(!is_dir($save_image_directory."/".$directory))
                 mkpath($save_image_directory."/".$directory);

@@ -265,11 +265,11 @@ function get_base_domain_address($page_base)
 			break;
 			}
 		}
-	
 	$last_two_characters = substr($page_base, strlen($page_base)-2, 2);
-	if($last_two_characters=="//")
+	if($last_two_characters=="//"){
 		$page_base = substr($page_base, 0, strlen($page_base)-1);
-
+		
+	}
 	return $domain_base;
 	}
 
