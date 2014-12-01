@@ -1,5 +1,4 @@
 <?php
-header("Content-type: text/html; charset=utf-8"); 
 /*
 ########################################################################
 W3C? SOFTWARE NOTICE AND LICENSE
@@ -44,44 +43,47 @@ THIS SCRIPT IS FOR DEMONSTRATION PURPOSES ONLY!
 
 
 
-<?php
-# Include libraries
-include("../util/LIB_http_browser.php");
-include("../util/LIB_parse.php");
-include("../util/LIB_rss.php");
-?>
-<head>
-    <style>
-        BODY      { font-family:arial; color: black;}
-        A:link    { color: blue;}
-        A:visited { color: navy;}
-        A:active  { color: White;}
-    </style>
-</head>
-<table>
-    <tr>
-        <td valign="top" width="33%">
-            <?php
-            // $target = "http://www.nytimes.com/services/xml/rss/nyt/RealEstate.xml";
-            // $rss_array = download_parse_rss($target);
-            // display_rss_array($rss_array);
-            ?>
-        </td>
-        <td valign="top" width="33%">
-            <?php
-            // $target = "http://www.startribune.com/rss/1557.xml";
-            $target = "http://www.infzm.com/rss/home/rss2.0.xml";
-            $rss_array = download_parse_rss($target);
-            display_rss_array($rss_array);
-            ?>
-        </td>
-        <td valign="top" width="33%">
-            <?php
-            // $target = "http://www.mercurynews.com/mld/mercurynews/news/breaking_news/rss.xml";
-            // $rss_array = download_parse_rss($target);
-            // display_rss_array($rss_array);
-            ?>
-        </td>
+<?
+# Initialization
+include("../util/LIB_http.php");                        // http library
+include("../util/LIB_parse.php");                       // parse library
+include("../util/LIB_resolve_addresses.php");           // address resolution library
+include("../util/LIB_exclusion_list.php");              // list of excluded keywords
+include("../util/LIB_simple_spider.php");               // spider routines used by this app.
+include("../util/LIB_download_images.php");
 
-    </tr>
-</table>
+set_time_limit(3600);                           // Don't let PHP timeout
+
+$SEED_URL        = "http://www.schrenk.com";    // First URL spider downloads
+$MAX_PENETRATION = 1;                           // Set spider penetration depth
+$FETCH_DELAY     = 1;                           // Wait one second between page fetches
+$ALLOW_OFFISTE   = true;                        // Don't allow spider to roam from the SEED_URL's domain
+$spider_array = array();
+
+# Get links from $SEED_URL
+echo "Harvesting Seed URL    \n"; 
+$temp_link_array = harvest_links($SEED_URL);
+$spider_array = archive_links($spider_array, 0, $temp_link_array);
+
+# Spider links in remaining penetration levels
+for($penetration_level=1; $penetration_level<=$MAX_PENETRATION; $penetration_level++)
+    {
+    $previous_level = $penetration_level - 1;
+    for($xx=0; $xx<count($spider_array[$previous_level]); $xx++)
+        {
+        unset($temp_link_array);
+        $temp_link_array = harvest_links($spider_array[$previous_level][$xx]);
+        echo "Level=$penetration_level, xx=$xx of ".count($spider_array[$previous_level])." <br>\n"; 
+        $spider_array = archive_links($spider_array, $penetration_level, $temp_link_array);
+        }
+    }
+
+# Download images from pages referenced in $spider_array
+for($penetration_level=1; $penetration_level<=$MAX_PENETRATION; $penetration_level++)
+    {
+    for($xx=0; $xx<count($spider_array[$previous_level]); $xx++)
+        {
+        download_images_for_page($spider_array[$previous_level][$xx]);
+        }
+    }
+?>

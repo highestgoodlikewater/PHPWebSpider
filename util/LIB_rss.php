@@ -103,31 +103,35 @@ RETURNS:
 		Sends results to the display device                             
 ***********************************************************************/
 function display_rss_array($rss_array)
-    {?>
+
+    {
+		// var_dump($rss_array);
+	?>
     <table border="0">
         <!-- Display the article title and copyright notice -->    
-        <tr><td><font size="+1"><b><?echo strip_cdata_tags($rss_array['TITLE'])?></b></font></td></tr>
-        <tr><td><?echo strip_cdata_tags($rss_array['COPYRIGHT'])?></td></tr>
+        <tr><td><font size="+1"><b><?php echo strip_cdata_tags($rss_array['TITLE'])?></b></font></td></tr>
+        <tr><td><?php echo strip_cdata_tags($rss_array['COPYRIGHT'])?></td></tr>
 
         <!-- Display the article descriptions and links -->    
-        <?for($xx=0; $xx<count($rss_array['ITITLE']); $xx++)
+		
+        <?php for($xx=0; $xx<count($rss_array['ITITLE']); $xx++)
             {?>
             <tr>
                 <td>
-                    <a href="<?echo strip_cdata_tags($rss_array['ILINK'][$xx])?>">
-                        <b><?echo strip_cdata_tags($rss_array['ITITLE'][$xx])?></b>
+                    <a href="<?php echo strip_cdata_tags($rss_array['ILINK'][$xx])?>">
+                        <b><?php echo strip_cdata_tags($rss_array['ITITLE'][$xx])?></b>
                     </a>
                 </td>
             </tr>
             <tr>
-                <td><?echo strip_cdata_tags($rss_array['IDESCRIPTION'][$xx])?></td>
+                <td><?php echo strip_cdata_tags($rss_array['IDESCRIPTION'][$xx])?></td>
             </tr>
             <tr>
-                <td><font size="-1"><?echo strip_cdata_tags($rss_array['IPUBDATE'][$xx])?></font></td>
+                <td><font size="-1"><?php echo strip_cdata_tags($rss_array['IPUBDATE'][$xx])?></font></td>
             </tr>
-          <?}?>
+          <?php }?>
     </table>
-  <?}
+<?php }
 
 /***********************************************************************
 strip_cdata_tags($string)                                               
@@ -147,6 +151,5 @@ function strip_cdata_tags($string)
     $string = str_replace("<![CDATA[", "", $string);
     $string = str_replace("]]>", "", $string);
     return $string;
-    }  
-  ?>
-  
+    }
+?>

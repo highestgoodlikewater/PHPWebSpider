@@ -1,5 +1,4 @@
 <?php
-header("Content-type: text/html; charset=utf-8"); 
 /*
 ########################################################################
 W3C? SOFTWARE NOTICE AND LICENSE
@@ -44,44 +43,48 @@ THIS SCRIPT IS FOR DEMONSTRATION PURPOSES ONLY!
 
 
 
-<?php
-# Include libraries
-include("../util/LIB_http_browser.php");
-include("../util/LIB_parse.php");
-include("../util/LIB_rss.php");
-?>
-<head>
-    <style>
-        BODY      { font-family:arial; color: black;}
-        A:link    { color: blue;}
-        A:visited { color: navy;}
-        A:active  { color: White;}
-    </style>
-</head>
-<table>
-    <tr>
-        <td valign="top" width="33%">
-            <?php
-            // $target = "http://www.nytimes.com/services/xml/rss/nyt/RealEstate.xml";
-            // $rss_array = download_parse_rss($target);
-            // display_rss_array($rss_array);
-            ?>
-        </td>
-        <td valign="top" width="33%">
-            <?php
-            // $target = "http://www.startribune.com/rss/1557.xml";
-            $target = "http://www.infzm.com/rss/home/rss2.0.xml";
-            $rss_array = download_parse_rss($target);
-            display_rss_array($rss_array);
-            ?>
-        </td>
-        <td valign="top" width="33%">
-            <?php
-            // $target = "http://www.mercurynews.com/mld/mercurynews/news/breaking_news/rss.xml";
-            // $rss_array = download_parse_rss($target);
-            // display_rss_array($rss_array);
-            ?>
-        </td>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
-    </tr>
-</table>
+<html>
+<head>
+	<title>Read email</title>
+</head>
+
+<body>
+<?php
+include("../util/LIB_pop3.php");
+include("../util/LIB_parse.php");
+define("SERVER", YOUR_MAIL_SERVER);       // Name of your POP3 mail server
+define("USER",   YOUR_EMAIL_ADDRESS);     // Your POP3 email address
+define("PASS",   YOUR_PASSWORD);          // Your POP3 password
+
+// Connect to POP3 server
+$connection_array =  POP3_connect(SERVER, USER, PASS);
+$POP3_connection = $connection_array['handle'];
+
+$list_array = POP3_list($POP3_connection);
+
+$message = POP3_retr($POP3_connection, 1);
+
+$ret_path  = return_between($message, "Return-Path: ", "\n", EXCL );
+$deliver_to = return_between($message, "Delivered-To: ", "\n", EXCL );
+$date = return_between($message, "Date: ", "\n", EXCL );
+$from = return_between($message, "From: ", "\n", EXCL );
+$subject = return_between($message, "Subject: ", "\n", EXCL );
+
+$content_type = return_between($message, "Content-Type: ", "\n", EXCL);
+$boundary = get_attribute($content_type, "boundary");
+$raw_msg = return_between($message, "--".$boundary, "--".$boundary, EXCL );
+$clean_msg = return_between($raw_msg, chr(13).chr(10).chr(13).chr(10), chr(13).chr(10).chr(13).chr(10), EXCL );
+
+echo "<xmp>ret_path   = $ret_path</xmp>";
+echo "<xmp>deliver_to   = $deliver_to</xmp>";
+echo "<xmp>date   = $date</xmp>";
+echo "<xmp>subject  = $subject</xmp>";
+echo "<xmp>content_type   = $content_type </xmp>";
+echo "<xmp>boundary  = $boundary </xmp>";
+echo "<xmp>clean_msg = $clean_msg</xmp>";
+?>
+<xmp><?php var_dump($message)?></xmp>
+</body>
+</html>
